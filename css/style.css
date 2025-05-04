@@ -1,0 +1,174 @@
+/* General Layout
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f8;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 30px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+h1 {
+    text-align: center;
+    color: #2c3e50;
+}
+
+/* Chart Container */
+/* #chart {
+    margin: 20px auto;
+    display: flex;
+    justify-content: center;
+}
+
+/* Legend Styling */
+/* .legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin: 5px 12px;
+}
+
+.legend-color {
+    width: 14px;
+    height: 14px;
+    margin-right: 8px;
+    border-radius: 2px;
+}
+
+/* Description Text */
+/* .description {
+    text-align: center;
+    margin-top: 30px;
+}
+
+/* Tooltip Styling */
+/* .tooltip {
+    position: absolute;
+    text-align: center;
+    padding: 6px 10px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    border-radius: 5px;
+    pointer-events: none;
+    font-size: 13px;
+    z-index: 10;
+    opacity: 0;
+} */ */ */ */ */
+
+/* General Layout */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f8;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
+
+.container {
+    max-width: 900px;
+    margin: 20px auto;
+    background: #fff;
+    padding: 30px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 30px;
+}
+
+/* Chart Containers */
+#chart1, #chart2 {
+    margin: 20px auto;
+    display: flex;
+    justify-content: center;
+}
+
+/* Legend Styling */
+.legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin: 5px 12px;
+}
+
+.legend-color {
+    width: 14px;
+    height: 14px;
+    margin-right: 8px;
+    border-radius: 2px;
+}
+
+/* Description Text */
+.description {
+    text-align: center;
+    margin-top: 30px;
+    color: #666;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Tooltip Styling */
+.tooltip {
+    position: absolute;
+    text-align: center;
+    padding: 6px 10px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    border-radius: 5px;
+    pointer-events: none;
+    font-size: 13px;
+    z-index: 10;
+    opacity: 0;
+}
+
+/* Pie Chart Specific Styles */
+.arc path {
+    stroke: #fff;
+    stroke-width: 2px;
+    transition: opacity 0.3s;
+}
+
+.arc path:hover {
+    opacity: 0.8;
+}
+
+.percentage-label {
+    font-size: 12px;
+    font-weight: 600;
+    fill: #000;
+    pointer-events: none;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+    
+    .legend {
+        flex-direction: column;
+        align-items: center;
+    }
+}
