@@ -542,3 +542,451 @@ document.addEventListener("DOMContentLoaded", function () {
     const ctxLine = document.getElementById('lineChart').getContext('2d');
     createGraph(yearlySales, ctxLine, 'line', 'Tahun');
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    fetch('data/video_games_cleaned.csv')
+      .then(response => response.text())
+      .then(csvData => {
+        const data = parseCSV(csvData);
+  
+        const ctx1 = document.getElementById('chart1').getContext('2d');
+        
+        const ctx2 = document.getElementById('chart2').getContext('2d');
+  
+        // Data untuk Perbandingan Penjualan di Berbagai Region
+        const data1 = {
+          labels: ['Wii Sports', 'GTA V', 'Minecraft', 'Tetris', 'Mario Kart 8', 'PUBG', 'Pokemon Red/Blue', 'Wii Fit', 'Pac-Man', 'Duck Hunt'],
+          datasets: [
+            {
+              label: 'North America Sales',
+              data: [41.49, 23.2, 21.04, 23.2, 14.02, 6.81, 11.27, 8.94, 7.81, 26.93],
+              backgroundColor: 'rgba(75, 192, 192, 0.7)'
+            },
+            {
+              label: 'Europe Sales',
+              data: [29.02, 20.17, 14.45, 2.26, 12.76, 9.16, 8.89, 8.03, 0.28, 0.63],
+              backgroundColor: 'rgba(255, 159, 64, 0.7)'
+            },
+            {
+              label: 'Jepang Sales',
+              data: [3.77, 0.97, 3.54, 4.22, 1.66, 0.13, 10.22, 3.6, 3.93, 0.28],
+              backgroundColor: 'rgba(153, 102, 255, 0.7)'
+            },
+            {
+              label: 'Other Sales',
+              data: [8.94, 4.12, 2.84, 3.45, 5.32, 3.17, 2.51, 2.02, 1.65, 0.95],
+              backgroundColor: 'rgba(255, 99, 132, 0.7)' // Different color for Other Sales
+            }
+          ]
+        };
+  
+        // Konfigurasi Grouped Bar Chart
+        const config1 = {
+          type: 'bar',
+          data: data1,
+          options: {
+            responsive: true,
+            plugins: {
+              title: {
+                display: true,
+                text: 'Perbandingan Penjualan di Berbagai Region',
+                font: {
+                  size: 18
+                }
+              },
+              tooltip: {
+                mode: 'index',
+                intersect: false
+              },
+              datalabels: {
+                anchor: 'end',
+                align: 'top',
+                color: '#000',
+                font: {
+                  weight: 'bold',
+                  size: 11
+                },
+                formatter: (value) => value
+              }
+            },
+            interaction: {
+              mode: 'nearest',
+              axis: 'x',
+              intersect: false
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: 'Jutaan Unit'
+                }
+              }
+            }
+          },
+          plugins: [ChartDataLabels]
+        };
+        
+  
+        new Chart(ctx1, config1);
+  
+        // Mengambil data untuk histogram
+        const userScores = data.map(game => game.User_Score).filter(score => score !== null);
+  
+        const histogramData = {
+          labels: ['0-1', '1-2', '2-3', '3-4', '4-5', '5-6', '6-7', '7-8', '8-9', '9-10'],
+          datasets: [{
+            label: 'Distribusi Skor Pengguna',
+            data: createHistogram(userScores),
+            backgroundColor: 'rgba(54, 162, 235, 0.7)'
+          }]
+        };
+  
+  
+  
+        // Konfigurasi Histogram
+        const config2 = {
+          type: 'bar',
+          data: histogramData,
+          options: {
+            responsive: true,
+            plugins: {
+              title: {
+                display: true,
+                text: 'Distribusi Skor Pengguna (User_Score)',
+                font: {
+                  size: 18
+                }
+              },
+              tooltip: {
+                callbacks: {
+                  label: (context) => `${context.dataset.label}: ${context.parsed.y} game`
+                }
+              },
+              
+              datalabels: {
+                anchor: 'end',
+                align: 'top',
+                color: '#000',
+                font: {
+                  weight: 'bold'
+                },
+                formatter: Math.round
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: 'Jumlah Game'
+                }
+              }
+            }
+          },
+          plugins: [ChartDataLabels]
+        };
+  
+        new Chart(ctx2, config2);
+      });
+  });
+  
+  // Fungsi untuk mengonversi CSV ke array of objects
+  function parseCSV(csv) {
+    const rows = csv.split('\n');
+    const headers = rows[0].split(',');
+    const data = rows.slice(1).map(row => {
+      const values = row.split(',');
+      const obj = {};
+      values.forEach((value, index) => {
+        obj[headers[index]] = value;
+      });
+      return obj;
+    });
+    return data;
+  }
+  
+  // Fungsi untuk membuat histogram berdasarkan rentang skor
+  function createHistogram(scores) {
+    const bins = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const histogram = new Array(bins.length - 1).fill(0);
+  
+    scores.forEach(score => {
+      for (let i = 0; i < bins.length - 1; i++) {
+        if (score >= bins[i] && score < bins[i + 1]) {
+          histogram[i]++;
+          break;
+        }
+      }
+    });
+  
+    return histogram;
+  }
+
+  const svg = d3.select("#scatterPlot");
+const margin = { top: 50, right: 50, bottom: 50, left: 60 };
+const width = +svg.attr("width") - margin.left - margin.right;
+const height = +svg.attr("height") - margin.top - margin.bottom;
+
+d3.csv("data/video_games_cleaned.csv").then(data => {
+  data.forEach(d => {
+    d.Critic_Score = +d.Critic_Score * 10; // Konversi skala ke 0–100
+    d.Global_Sales = +d.Global_Sales;
+  });
+
+  // Isi dropdown dengan genre unik
+  const genres = Array.from(new Set(data.map(d => d.Genre))).sort();
+  const dropdown = d3.select("#genreFilter");
+  genres.forEach(genre => {
+    dropdown.append("option")
+      .attr("value", genre)
+      .text(genre);
+  });
+
+  function updateChart(filteredData) {
+    svg.selectAll("*").remove();
+
+    const x = d3.scaleLinear().domain([0, 100]).range([margin.left, width + margin.left]);
+    const y = d3.scaleLinear().domain([0, d3.max(filteredData, d => d.Global_Sales)]).range([height + margin.top, margin.top]);
+
+    svg.append("g")
+      .attr("transform", `translate(0, ${height + margin.top})`)
+      .call(d3.axisBottom(x));
+
+    svg.append("g")
+      .attr("transform", `translate(${margin.left}, 0)`)
+      .call(d3.axisLeft(y));
+
+    svg.append("text")
+      .attr("x", width / 2 + margin.left)
+      .attr("y", margin.top / 2)
+      .attr("text-anchor", "middle")
+      .attr("font-size", "18px")
+      .attr("font-weight", "bold")
+      .text("Critic Score vs Global Sales");
+
+    svg.selectAll("circle")
+      .data(filteredData)
+      .enter()
+      .append("circle")
+      .attr("cx", d => x(d.Critic_Score))
+      .attr("cy", d => y(d.Global_Sales))
+      .attr("r", 4)
+      .style("fill", "#69b3a2")
+      .style("opacity", 0.7);
+
+    // Regresi linear
+    const xMean = d3.mean(filteredData, d => d.Critic_Score);
+    const yMean = d3.mean(filteredData, d => d.Global_Sales);
+    const num = d3.sum(filteredData, d => (d.Critic_Score - xMean) * (d.Global_Sales - yMean));
+    const den = d3.sum(filteredData, d => Math.pow(d.Critic_Score - xMean, 2));
+    const slope = num / den;
+    const intercept = yMean - slope * xMean;
+
+    const regLine = d3.line()
+      .x(d => x(d.Critic_Score))
+      .y(d => y(slope * d.Critic_Score + intercept));
+
+    svg.append("path")
+      .datum([{ Critic_Score: 0 }, { Critic_Score: 100 }])
+      .attr("d", regLine)
+      .attr("stroke", "red")
+      .attr("stroke-width", 2)
+      .attr("stroke-dasharray", "5,5")
+      .attr("fill", "none");
+
+    // R-squared
+    const ssTot = d3.sum(filteredData, d => Math.pow(d.Global_Sales - yMean, 2));
+    const ssRes = d3.sum(filteredData, d => Math.pow(d.Global_Sales - (slope * d.Critic_Score + intercept), 2));
+    const rSquared = 1 - ssRes / ssTot;
+
+    svg.append("text")
+      .attr("x", width + margin.left - 100)
+      .attr("y", margin.top + 10)
+      .attr("text-anchor", "end")
+      .attr("font-size", "13px")
+      .attr("fill", "red")
+      .text(`R² = ${rSquared.toFixed(3)}`);
+  }
+
+  // Tampilkan semua data saat awal
+  updateChart(data);
+
+  // Update saat genre berubah
+  dropdown.on("change", function () {
+    const selected = this.value;
+    const filtered = selected === "All" ? data : data.filter(d => d.Genre === selected);
+    updateChart(filtered);
+  });
+});
+
+// Di bagian akhir main.js, tambahkan ini:
+
+// Regional Sales Comparison Chart
+function createRegionalSalesChart(data) {
+    const ctx = document.getElementById('regionalChart').getContext('2d');
+    
+    // Process data to get top games by global sales
+    const topGames = data.sort((a, b) => b.Global_Sales - a.Global_Sales)
+                        .slice(0, 10)
+                        .map(d => d.Name);
+
+    const regionalData = {
+        labels: topGames,
+        datasets: [
+            {
+                label: 'North America Sales',
+                data: data.filter(d => topGames.includes(d.Name))
+                         .sort((a, b) => b.Global_Sales - a.Global_Sales)
+                         .map(d => d.NA_Sales),
+                backgroundColor: 'rgba(75, 192, 192, 0.7)'
+            },
+            {
+                label: 'Europe Sales',
+                data: data.filter(d => topGames.includes(d.Name))
+                         .sort((a, b) => b.Global_Sales - a.Global_Sales)
+                         .map(d => d.EU_Sales),
+                backgroundColor: 'rgba(255, 159, 64, 0.7)'
+            },
+            {
+                label: 'Japan Sales',
+                data: data.filter(d => topGames.includes(d.Name))
+                         .sort((a, b) => b.Global_Sales - a.Global_Sales)
+                         .map(d => d.JP_Sales),
+                backgroundColor: 'rgba(153, 102, 255, 0.7)'
+            },
+            {
+                label: 'Other Sales',
+                data: data.filter(d => topGames.includes(d.Name))
+                         .sort((a, b) => b.Global_Sales - a.Global_Sales)
+                         .map(d => d.Other_Sales),
+                backgroundColor: 'rgba(255, 99, 132, 0.7)'
+            }
+        ]
+    };
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: regionalData,
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Top Games Sales by Region',
+                    font: { size: 18 }
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
+                },
+                datalabels: {
+                    display: false // Disable datalabels for this chart
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Sales (in millions)'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Games'
+                    }
+                }
+            }
+        }
+    });
+}
+
+// User Score Distribution Chart
+function createUserScoreChart(data) {
+    const ctx = document.getElementById('histogramChart').getContext('2d');
+    
+    // Process user scores
+    const userScores = data.map(d => d.User_Score ? +d.User_Score : null)
+                          .filter(score => score !== null);
+    
+    // Create histogram bins
+    const bins = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const histogram = new Array(bins.length - 1).fill(0);
+
+    userScores.forEach(score => {
+        for (let i = 0; i < bins.length - 1; i++) {
+            if (score >= bins[i] && score < bins[i + 1]) {
+                histogram[i]++;
+                break;
+            }
+        }
+    });
+
+    const histogramData = {
+        labels: bins.slice(0, -1).map((bin, i) => `${bin}-${bins[i+1]}`),
+        datasets: [{
+            label: 'Number of Games',
+            data: histogram,
+            backgroundColor: 'rgba(54, 162, 235, 0.7)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+        }]
+    };
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: histogramData,
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Distribution of User Scores',
+                    font: { size: 18 }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: (context) => `${context.parsed.y} games`
+                    }
+                },
+                datalabels: {
+                    anchor: 'end',
+                    align: 'top',
+                    color: '#000',
+                    font: { weight: 'bold' },
+                    formatter: Math.round
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Number of Games'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'User Score Range'
+                    }
+                }
+            }
+        },
+        plugins: [ChartDataLabels]
+    });
+}
+
+// Panggil fungsi-fungsi ini dalam then() setelah load CSV
+d3.csv("data/video_games_cleaned.csv").then(dataset => {
+    // Proses data seperti sebelumnya...
+    
+    // Tambahkan ini di akhir then():
+    createRegionalSalesChart(dataset);
+    createUserScoreChart(dataset);
+}).catch(error => {
+    console.error("Error loading the CSV data: ", error);
+});
+

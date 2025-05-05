@@ -26,56 +26,89 @@
     <section>
       <h2>Top 10 Games by Global Sales</h2>
       <svg id="topGamesChart" width="800" height="400"></svg>
-      <table id="topGamesTable"></table>
       <div class="description">
         <p>This chart displays the top 10 best-selling video games globally.</p>
       </div>
     </section>
+
+    <!-- ESRB Rating Distribution -->
+    <section>
+      <h2>ESRB Rating Distribution</h2>
+      <div id="chart1"></div>
+      <div class="description">
+        <p>This bar chart shows how video games are distributed across different ESRB rating categories.</p>
+      </div>
+    </section>
+
+    <!-- Top Publishers -->
+    <section>
+      <h2>Top 5 Game Publishers</h2>
+      <div id="chart2"></div>
+      <div class="description">
+        <p>This chart shows the distribution of games among the top 5 publishers.</p>
+      </div>
+    </section>
+
+    <!-- Platform Sales -->
+    <section>
+      <h2>Platform Sales Analysis</h2>
+      <div class="chart-container">
+        <h3>Total Global Sales per Platform</h3>
+        <canvas id="barChart1"></canvas>
+      </div>
+    </section>
+
+    <!-- Genre Sales -->
+    <section>
+      <h2>Genre Sales Analysis</h2>
+      <div class="chart-container">
+        <h3>Total Global Sales per Genre</h3>
+        <canvas id="barChart2"></canvas>
+      </div>
+    </section>
+
+    <!-- Yearly Sales Trend -->
+    <section>
+      <h2>Yearly Sales Trend</h2>
+      <div class="chart-container">
+        <h3>Global Sales per Year</h3>
+        <canvas id="lineChart"></canvas>
+      </div>
+    </section>
+
+    <!-- Regional Sales Comparison -->
+    <section>
+      <h2>Regional Sales Comparison</h2>
+      <div class="chart-container">
+        <canvas id="regionalChart"></canvas>
+      </div>
+    </section>
+
+    <!-- User Score Distribution -->
+    <section>
+      <h2>User Score Distribution</h2>
+      <div class="chart-container">
+        <canvas id="histogramChart"></canvas>
+      </div>
+    </section>
+
+    <!-- Critic Score vs Sales -->
+    <section>
+      <h2>Critic Score vs Global Sales</h2>
+      <div class="filter-container">
+        <label for="genreFilter">Filter by Genre:</label>
+        <select id="genreFilter">
+          <option value="All">All</option>
+        </select>
+      </div>
+      <svg id="scatterPlot" width="900" height="550"></svg>
+      <div class="description">
+        <p>This scatter plot shows the relationship between critic scores and global sales.</p>
+      </div>
+    </section>
   </div>
 
-  <div class="container">
-    <h1>ESRB Rating Distribution in Video Games Sales</h1>
-    <div id="chart1"></div>
-    <div class="legend" id="legend1"></div>
-    <div class="description">
-      <p>This bar chart shows how video games are distributed across different ESRB rating categories.</p>
-      <p>Each bar represents the number of games assigned to a specific ESRB rating.</p>
-    </div>
-  </div>
-
-  <div class="container">
-    <h1>Top 5 Game Publishers</h1>
-    <div id="chart2"></div>
-    <div class="legend" id="legend2"></div>
-    <div class="description">
-      <p>This pie chart shows the distribution of games among the top 5 publishers.</p>
-      <p>Hover over slices to see detailed information.</p>
-    </div>
-    <div class="tooltip"></div>
-  </div>
-
-  <div class="container">
-    <h1>Platform Sales Visualization</h1>
-    
-    <h2>1. Platform mana yang paling populer berdasarkan penjualan?</h2>
-    <div class="chart-container">
-      <h3>Diagram Batang Total Penjualan Global per Platform</h3>
-      <canvas id="barChart1"></canvas>
-    </div>
-
-    <h2>2. Genre mana yang paling laris?</h2>
-    <div class="chart-container">
-      <h3>Diagram Batang Total Penjualan per Genre</h3>
-      <canvas id="barChart2"></canvas>
-    </div>
-
-    <h2>3. Bagaimana tren penjualan video game dari tahun ke tahun?</h2>
-    <div class="chart-container">
-      <h3>Tren Penjualan Video Game dari Tahun ke Tahun</h3>
-      <canvas id="lineChart"></canvas>
-    </div>
-  </div>
-
+  <div class="tooltip"></div>
   <script src="js/main.js"></script>
 </body>
 </html>
