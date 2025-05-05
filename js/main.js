@@ -1,6 +1,6 @@
 // Load dataset from the CSV file
 d3.csv("data/video_games_cleaned.csv").then(dataset => {
-  
+
   // Process the dataset and convert sales columns to numbers
   dataset.forEach(d => {
     d.NA_Sales = +d.NA_Sales;
@@ -12,7 +12,6 @@ d3.csv("data/video_games_cleaned.csv").then(dataset => {
   });
 
   // 1. Sales Trends by Decade (Bar & Line Chart)
-  // Mengelompokkan data berdasarkan dekade
   const decadeData = d3.rollup(dataset, v => d3.sum(v, d => d.Global_Sales), d => Math.floor(d.Year_of_Release / 10) * 10);
 
   // Membuat array dari decadeData, mengurutkan berdasarkan urutan kronologis
@@ -24,151 +23,87 @@ d3.csv("data/video_games_cleaned.csv").then(dataset => {
   // Menghapus dekade 2020-an jika tidak ada data penjualan yang relevan
   const filteredDecadeArray = decadeArray.filter(d => d.decade !== "2020s");
 
-  const margin = { top: 20, right: 30, bottom: 40, left: 40 };
-  const width = 800 - margin.left - margin.right;
-  const height = 400 - margin.top - margin.bottom;
+  const margin = { top: 20, right: 40, bottom: 60, left: 70};// Menambahkan margin untuk label
+  const width = 1000 - margin.left - margin.right;
+  const height = 500 - margin.top - margin.bottom;
 
   const svgDecade = d3.select("#decadeChart")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   const xDecade = d3.scaleBand()
-    .domain(filteredDecadeArray.map(d => d.decade))
-    .range([0, width])
-    .padding(0.1);
+      .domain(filteredDecadeArray.map(d => d.decade))
+      .range([0, width])
+      .padding(0.1);
 
   const yDecade = d3.scaleLinear()
-    .domain([0, d3.max(filteredDecadeArray, d => d.sales)])
-    .nice()
-    .range([height, 0]);
+      .domain([0, d3.max(filteredDecadeArray, d => d.sales)])
+      .nice()
+      .range([height, 0]);
 
+  // Tooltip untuk menampilkan info saat hover
+  const tooltip = d3.select("body").append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0);
+
+  // Bar chart dengan tooltip
   svgDecade.selectAll(".bar")
-    .data(filteredDecadeArray)
-    .enter().append("rect")
-    .attr("class", "bar")
-    .attr("x", d => xDecade(d.decade))
-    .attr("y", d => yDecade(d.sales))
-    .attr("width", xDecade.bandwidth())
-    .attr("height", d => height - yDecade(d.sales));
+      .data(filteredDecadeArray)
+      .enter().append("rect")
+      .attr("class", "bar black-bar")  // Tambahkan kelas 'black-bar' untuk bar di grafik ini
+      .attr("x", d => xDecade(d.decade))
+      .attr("y", d => yDecade(d.sales))
+      .attr("width", xDecade.bandwidth())
+      .attr("height", d => height - yDecade(d.sales))
+      .on("mouseover", function(event, d) {
+          tooltip.transition().duration(200).style("opacity", .9);
+          tooltip.html(`${d.decade}: ${d.sales.toFixed(2)} Juta`)
+              .style("left", (event.pageX + 5) + "px")
+              .style("top", (event.pageY - 28) + "px");
+      })
+      .on("mouseout", function(d) {
+          tooltip.transition().duration(500).style("opacity", 0);
+      });
 
   const line = d3.line()
-    .x(d => xDecade(d.decade) + xDecade.bandwidth() / 2)
-    .y(d => yDecade(d.sales));
+      .x(d => xDecade(d.decade) + xDecade.bandwidth() / 2)
+      .y(d => yDecade(d.sales));
 
   svgDecade.append("path")
-    .data([filteredDecadeArray])
-    .attr("class", "line")
-    .attr("d", line);
+      .data([filteredDecadeArray])
+      .attr("class", "line")
+      .attr("d", line);
 
   svgDecade.append("g")
-    .attr("class", "x axis")
-    .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(xDecade).ticks(filteredDecadeArray.length).tickSize(0));
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(xDecade).ticks(filteredDecadeArray.length).tickSize(0));
 
   svgDecade.append("g")
-    .attr("class", "y axis")
-    .call(d3.axisLeft(yDecade).ticks(5));
+      .attr("class", "y axis")
+      .call(d3.axisLeft(yDecade).ticks(5));
 
+    // Label X (Dekade)
+    svgDecade.append("text")
+        .attr("x", width / 2)
+        .attr("y", height + margin.bottom - 10)
+        .attr("text-anchor", "middle")
+        .style("font-size", "14px")
+        .style("fill", "black")
+        .text("Dekade");
 
-  // 2. Top 10 Games by Global Sales (Bar Chart & Table)
-  const topGamesData = dataset.sort((a, b) => b.Global_Sales - a.Global_Sales).slice(0, 10);
+    // Label Y (Penjualan)
+    svgDecade.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -height / 2)
+        .attr("y", -margin.left + 20)
+        .attr("text-anchor", "middle")
+        .style("font-size", "14px")
+        .style("fill", "black")
+        .text("Global Sales (Juta)");
 
-  const svgTopGames = d3.select("#topGamesChart")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-  const xTopGames = d3.scaleBand()
-    .domain(topGamesData.map(d => d.Name))
-    .range([0, width])
-    .padding(0.1);
-
-  const yTopGames = d3.scaleLinear()
-    .domain([0, d3.max(topGamesData, d => d.Global_Sales)])
-    .nice()
-    .range([height, 0]);
-
-    // Membuat bar chart
-  svgTopGames.selectAll(".bar")
-  .data(topGamesData)
-  .enter().append("rect")
-  .attr("class", "bar")
-  .attr("x", d => xTopGames(d.Name))
-  .attr("y", d => yTopGames(d.Global_Sales))
-  .attr("width", xTopGames.bandwidth())
-  .attr("height", d => height - yTopGames(d.Global_Sales));
-
-  // Menambahkan label sumbu X
-  svgTopGames.append("text")
-  .attr("x", width / 2)
-  .attr("y", height + margin.bottom)
-  .attr("text-anchor", "middle")
-  .style("font-size", "12px")
-  .text("Games");
-
-  // Menambahkan label sumbu Y
-  svgTopGames.append("text")
-  .attr("x", -height / 2)
-  .attr("y", -margin.left + 15)
-  .attr("transform", "rotate(-90)")
-  .attr("text-anchor", "middle")
-  .style("font-size", "12px")
-  .text("Global Sales");
-
-  // Menambahkan sumbu X
-  svgTopGames.append("g")
-  .attr("class", "x axis")
-  .attr("transform", "translate(0," + height + ")")
-  .call(d3.axisBottom(xTopGames))
-  .selectAll("text")
-  .style("text-anchor", "middle")
-  .style("font-size", "10px")  // Menyesuaikan ukuran font
-  .each(function(d, i) {
-    const label = d; // Ambil label untuk diproses
-    const words = label.split(" "); // Pisahkan berdasarkan spasi
-    
-    const text = d3.select(this); // Pilih elemen teks
-    text.text(""); // Hapus teks asli
-    
-    // Jika lebih dari dua kata, pisahkan dua kata terakhir
-    if (words.length > 2) {
-      // Gabungkan dua kata pertama menjadi satu baris
-      text.append("tspan")
-        .text(words.slice(0, 2).join(" "))
-        .attr("x", 0)
-        .attr("dy", "0.7em") // Baris pertama tidak diberi jarak vertikal
-        .style("text-anchor", "middle");
-
-      // Gabungkan dua kata terakhir di baris kedua dengan jarak vertikal yang lebih besar
-      text.append("tspan")
-        .text(words.slice(2).join(" "))
-        .attr("x", 0)
-        .attr("dy", "1.2em") // Menyesuaikan jarak vertikal untuk pemisahan kata yang lebih baik
-        .style("text-anchor", "middle");
-    } else {
-      // Jika hanya satu atau dua kata, tampilkan seperti biasa
-      text.text(label);
-    }
-  });
-
-  // Menambahkan sumbu Y
-  svgTopGames.append("g")
-  .attr("class", "y axis")
-  .call(d3.axisLeft(yTopGames).ticks(5));
-
-  // Menambahkan nilai di atas bar
-  svgTopGames.selectAll(".bar")
-  .data(topGamesData)
-  .enter().append("text")
-  .attr("x", d => xTopGames(d.Name) + xTopGames.bandwidth() / 2)
-  .attr("y", d => yTopGames(d.Global_Sales) - 5)
-  .attr("text-anchor", "middle")
-  .style("font-size", "12px")
-  .text(d => d.Global_Sales.toFixed(2));  // Tampilkan nilai Global Sales dengan dua angka di belakang koma
-  
 }).catch(error => {
   console.error("Error loading the CSV data: ", error);
 });
@@ -723,7 +658,8 @@ document.addEventListener('DOMContentLoaded', () => {
     return histogram;
   }
 
-  const svg = d3.select("#scatterPlot");
+//scatterplot 
+const svg = d3.select("#scatterPlot");
 const margin = { top: 50, right: 50, bottom: 50, left: 60 };
 const width = +svg.attr("width") - margin.left - margin.right;
 const height = +svg.attr("height") - margin.top - margin.bottom;
@@ -743,6 +679,10 @@ d3.csv("data/video_games_cleaned.csv").then(data => {
       .text(genre);
   });
 
+  // Tambahkan tooltip
+   const tooltip = d3.select("body").append("div")
+  .attr("class", "tooltip");
+
   function updateChart(filteredData) {
     svg.selectAll("*").remove();
 
@@ -757,13 +697,30 @@ d3.csv("data/video_games_cleaned.csv").then(data => {
       .attr("transform", `translate(${margin.left}, 0)`)
       .call(d3.axisLeft(y));
 
+    // Label X
     svg.append("text")
-      .attr("x", width / 2 + margin.left)
-      .attr("y", margin.top / 2)
-      .attr("text-anchor", "middle")
-      .attr("font-size", "18px")
-      .attr("font-weight", "bold")
-      .text("Critic Score vs Global Sales");
+        .attr("x", width / 2 + margin.left)
+        .attr("y", height + margin.top + 40)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "14px")
+        .text("Critic Score");
+
+    // Label Y
+    svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", margin.left - 45)
+        .attr("x", -height / 2 - margin.top)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "14px")
+        .text("Global Sales (millions)");
+
+    svg.append("text")
+        .attr("x", width / 2 + margin.left)
+        .attr("y", margin.top / 2)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "18px")
+        .attr("font-weight", "bold")
+        .text("Critic Score vs Global Sales");
 
     svg.selectAll("circle")
       .data(filteredData)
@@ -773,7 +730,27 @@ d3.csv("data/video_games_cleaned.csv").then(data => {
       .attr("cy", d => y(d.Global_Sales))
       .attr("r", 4)
       .style("fill", "#69b3a2")
-      .style("opacity", 0.7);
+      .style("opacity", 0.7)
+
+      .on("mouseover", function (event, d) {
+        d3.select(this)
+          .transition()
+          .duration(100)
+          .attr("r", 6)
+          .style("opacity", 1);
+      
+        tooltip.transition()
+          .duration(200)
+          .style("opacity", 0.9);
+      
+        tooltip.html(`
+          <strong>${d.Name}</strong><br>
+          Critic: ${d.Critic_Score}<br>
+          Sales: ${d.Global_Sales}M
+        `)
+        .style("left", (event.pageX + 10) + "px")
+        .style("top", (event.pageY - 28) + "px");
+      })      
 
     // Regresi linear
     const xMean = d3.mean(filteredData, d => d.Critic_Score);

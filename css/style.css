@@ -1,82 +1,11 @@
-/* General Layout
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f6f8;
     margin: 0;
     padding: 20px;
     color: #333;
-}
-
-.container {
-    max-width: 900px;
-    margin: 0 auto;
-    background: #fff;
-    padding: 30px;
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-}
-
-h1 {
-    text-align: center;
-    color: #2c3e50;
-}
-
-/* Chart Container */
-/* #chart {
-    margin: 20px auto;
-    display: flex;
     justify-content: center;
-}
-
-/* Legend Styling */
-/* .legend {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-.legend-item {
-    display: flex;
     align-items: center;
-    margin: 5px 12px;
-}
-
-.legend-color {
-    width: 14px;
-    height: 14px;
-    margin-right: 8px;
-    border-radius: 2px;
-}
-
-/* Description Text */
-/* .description {
-    text-align: center;
-    margin-top: 30px;
-}
-
-/* Tooltip Styling */
-/* .tooltip {
-    position: absolute;
-    text-align: center;
-    padding: 6px 10px;
-    background: rgba(0, 0, 0, 0.8);
-    color: #fff;
-    border-radius: 5px;
-    pointer-events: none;
-    font-size: 13px;
-    z-index: 10;
-    opacity: 0;
-} */ */ */ */ */
-
-/* General Layout */
-/* General Layout */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f6f8;
-    margin: 0;
-    padding: 20px;
-    color: #333;
 }
 
 .container {
@@ -86,6 +15,7 @@ body {
     padding: 30px;
     box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
+    width: 90%;
 }
 
 h1, h2, h3 {
@@ -152,22 +82,64 @@ section {
     font-size: 13px;
     z-index: 10;
     opacity: 0;
+    transition: opacity 0.2s;
 }
 
 /* SVG Charts Styling */
 svg {
-    background-color: #fff;
+    background-color: #fff !important; /* Pastikan latar belakang putih */
     border-radius: 8px;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
 }
-
-.bar {
-    transition: opacity 0.3s;
+  
+  .bar:hover {
+    fill: orange;
+  }
+  
+/* Styling untuk label sumbu X dan Y */
+.axis-label {
+    font-size: 14px;
+    font-weight: bold;
+    fill: #333;
 }
 
-.bar:hover {
-    opacity: 0.8;
+.x.axis-label {
+    transform: translateY(20px); /* Memberikan sedikit jarak di bawah sumbu X */
 }
+
+.y.axis-label {
+    transform: translateX(-20px); /* Memberikan sedikit jarak pada sumbu Y */
+}
+  
+  .line {
+    fill: none;
+    stroke: #FF5733;
+    stroke-width: 2;
+  }
+  
+  .line-path {
+    stroke: #FF5733;
+    stroke-width: 2;
+    fill: none;
+  }
+
+/* Mengatur warna bar chart khusus */
+.black-bar {
+    fill: #3498db; /* Biru untuk bar chart di grafik ini */
+}
+
+/* Jika ingin mengubah warna garis tertentu */
+.line {
+    stroke: #2ecc71; /* Menjaga warna garis hijau */
+    stroke-width: 2;
+}
+
+.chart-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+  }
 
 /* Canvas Charts Styling */
 canvas {
