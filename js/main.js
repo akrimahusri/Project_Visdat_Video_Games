@@ -670,7 +670,7 @@ d3.csv("data/video_games_cleaned.csv").then(data => {
     d.Global_Sales = +d.Global_Sales;
   });
 
-  // Isi dropdown dengan genre unik
+  // Isi dropdown 
   const genres = Array.from(new Set(data.map(d => d.Genre))).sort();
   const dropdown = d3.select("#genreFilter");
   genres.forEach(genre => {
@@ -797,7 +797,7 @@ d3.csv("data/video_games_cleaned.csv").then(data => {
   });
 });
 
-// Di bagian akhir main.js, tambahkan ini:
+
 
 // Regional Sales Comparison Chart
 function createRegionalSalesChart(data) {
@@ -858,7 +858,7 @@ function createRegionalSalesChart(data) {
                     intersect: false
                 },
                 datalabels: {
-                    display: false // Disable datalabels for this chart
+                    display: false 
                 }
             },
             scales: {
@@ -956,11 +956,9 @@ function createUserScoreChart(data) {
     });
 }
 
-// Panggil fungsi-fungsi ini dalam then() setelah load CSV
+
 d3.csv("data/video_games_cleaned.csv").then(dataset => {
-    // Proses data seperti sebelumnya...
-    
-    // Tambahkan ini di akhir then():
+
     createRegionalSalesChart(dataset);
     createUserScoreChart(dataset);
 }).catch(error => {

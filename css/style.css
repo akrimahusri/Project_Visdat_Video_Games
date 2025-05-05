@@ -87,7 +87,7 @@ section {
 
 /* SVG Charts Styling */
 svg {
-    background-color: #fff !important; /* Pastikan latar belakang putih */
+    background-color: #fff !important; 
     border-radius: 8px;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
 }
@@ -123,14 +123,14 @@ svg {
     fill: none;
   }
 
-/* Mengatur warna bar chart khusus */
+
 .black-bar {
-    fill: #3498db; /* Biru untuk bar chart di grafik ini */
+    fill: #3498db; 
 }
 
-/* Jika ingin mengubah warna garis tertentu */
+
 .line {
-    stroke: #2ecc71; /* Menjaga warna garis hijau */
+    stroke: #2ecc71; 
     stroke-width: 2;
 }
 
@@ -139,7 +139,9 @@ svg {
     justify-content: center;
     align-items: center;
     margin: 20px 0;
-  }
+    width: 100%;
+    min-width: 600px;
+}
 
 /* Canvas Charts Styling */
 canvas {
@@ -148,6 +150,7 @@ canvas {
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
     max-width: 100%;
 }
+
 
 /* Responsive Design */
 @media (max-width: 768px) {
