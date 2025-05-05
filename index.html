@@ -8,85 +8,115 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+    }
+
+    .container {
+      padding: 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .tab-button {
+      padding: 10px 20px;
+      background: #e0e0e0;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .tab-button.active {
+      background: #4285f4;
+      color: white;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .chart-container, svg {
+      margin-top: 20px;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <h1>Video Games Sales Visualizations</h1>
 
-    <!-- Decade Sales Visualization -->
-    <section>
+    <div class="tabs">
+      <button class="tab-button active" data-tab="decade">Decade Sales</button>
+      <button class="tab-button" data-tab="esrb">ESRB Rating</button>
+      <button class="tab-button" data-tab="publishers">Top Publishers</button>
+      <button class="tab-button" data-tab="platform">Platform Sales</button>
+      <button class="tab-button" data-tab="genre">Genre Sales</button>
+      <button class="tab-button" data-tab="yearly">Yearly Trend</button>
+      <button class="tab-button" data-tab="regional">Regional Comparison</button>
+      <button class="tab-button" data-tab="userscore">User Score</button>
+      <button class="tab-button" data-tab="criticscore">Critic vs Sales</button>
+    </div>
+
+    <div class="tab-content active" id="decade">
       <h2>Trends of Sales by Decade</h2>
-      <div class="chart-container">
-        <svg id="decadeChart" width="800" height="400"></svg>
-      </div>
-      <div class="description">
-        <p>This chart shows the global sales trends of video games by decade.</p>
-      </div>
-    </section>    
+      <svg id="decadeChart" width="800" height="400"></svg>
+    </div>
 
-    <!-- ESRB Rating Distribution -->
-    <section>
+    <div class="tab-content" id="esrb">
       <h2>ESRB Rating Distribution</h2>
-      <div id="chart1"></div>
-      <div class="description">
-        <p>This bar chart shows how video games are distributed across different ESRB rating categories.</p>
-      </div>
-    </section>
+      <div id="chart1" class="chart-container"></div>
+    </div>
 
-    <!-- Top Publishers -->
-    <section>
+    <div class="tab-content" id="publishers">
       <h2>Top 5 Game Publishers</h2>
-      <div id="chart2"></div>
-      <div class="description">
-        <p>This chart shows the distribution of games among the top 5 publishers.</p>
-      </div>
-    </section>
+      <div id="chart2" class="chart-container"></div>
+    </div>
 
-    <!-- Platform Sales -->
-    <section>
+    <div class="tab-content" id="platform">
       <h2>Platform Sales Analysis</h2>
-      <div class="chart-container">
-        <h3>Total Global Sales per Platform</h3>
-        <canvas id="barChart1"></canvas>
-      </div>
-    </section>
+      <canvas id="barChart1" class="chart-container"></canvas>
+    </div>
 
-    <!-- Genre Sales -->
-    <section>
+    <div class="tab-content" id="genre">
       <h2>Genre Sales Analysis</h2>
-      <div class="chart-container">
-        <h3>Total Global Sales per Genre</h3>
-        <canvas id="barChart2"></canvas>
-      </div>
-    </section>
+      <canvas id="barChart2" class="chart-container"></canvas>
+    </div>
 
-    <!-- Yearly Sales Trend -->
-    <section>
+    <div class="tab-content" id="yearly">
       <h2>Yearly Sales Trend</h2>
-      <div class="chart-container">
-        <h3>Global Sales per Year</h3>
-        <canvas id="lineChart"></canvas>
-      </div>
-    </section>
+      <canvas id="lineChart" class="chart-container"></canvas>
+    </div>
 
-    <!-- Regional Sales Comparison -->
-    <section>
+    <div class="tab-content" id="regional">
       <h2>Regional Sales Comparison</h2>
-      <div class="chart-container">
-        <canvas id="regionalChart"></canvas>
-      </div>
-    </section>
+      <canvas id="regionalChart" class="chart-container"></canvas>
+    </div>
 
-    <!-- User Score Distribution -->
-    <section>
+    <div class="tab-content" id="userscore">
       <h2>User Score Distribution</h2>
-      <div class="chart-container">
-        <canvas id="histogramChart"></canvas>
-      </div>
-    </section>
+      <canvas id="histogramChart" class="chart-container"></canvas>
+    </div>
 
-    <!-- Critic Score vs Sales -->
-    <section>
+    <div class="tab-content" id="criticscore">
       <h2>Critic Score vs Global Sales</h2>
       <div class="filter-container">
         <label for="genreFilter">Filter by Genre:</label>
@@ -95,13 +125,24 @@
         </select>
       </div>
       <svg id="scatterPlot" width="900" height="550"></svg>
-      <div class="description">
-        <p>This scatter plot shows the relationship between critic scores and global sales.</p>
-      </div>
-    </section>
+    </div>
   </div>
 
   <div class="tooltip"></div>
+  <script>
+    const buttons = document.querySelectorAll(".tab-button");
+    const contents = document.querySelectorAll(".tab-content");
+
+    buttons.forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelector(".tab-button.active").classList.remove("active");
+        document.querySelector(".tab-content.active").classList.remove("active");
+
+        button.classList.add("active");
+        document.getElementById(button.dataset.tab).classList.add("active");
+      });
+    });
+  </script>
   <script src="js/main.js"></script>
 </body>
 </html>
